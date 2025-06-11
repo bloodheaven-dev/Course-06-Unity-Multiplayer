@@ -22,7 +22,7 @@ public class HostGameManager
     private Allocation allocation;
     
 
-    private const int MaxConnections = 40;
+    private const int MaxConnections = 8;
     private const float HeartbeatTime = 15;
     private const string GAME_SCENE_STRING = "MainLevel";
 
