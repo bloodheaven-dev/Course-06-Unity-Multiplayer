@@ -16,7 +16,7 @@ public class HostSingleton : MonoBehaviour
 
             if (instance == null)
             {
-                Debug.LogError("ClientSingleton not in Scene!");
+                Debug.LogWarning("ClientSingleton not in Scene!");
                 return null;
             }
 
@@ -33,6 +33,11 @@ public class HostSingleton : MonoBehaviour
     public void CreateHost()
     {
         GameManager = new HostGameManager();
+    }
+
+    private void OnDestroy()
+    {
+        GameManager?.Dispose();
     }
 
 }
