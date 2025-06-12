@@ -4,26 +4,18 @@ using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
-using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class ClientGameManager : IDisposable
 {
-    private JoinAllocation allocation;
-
-    private NetworkClient networkClient;
-
-    private const string TITLE_SCREEN_STRING = "TitleScreen";
+    JoinAllocation allocation;
 
     public async Task<bool> InitAsync()
     {
         await UnityServices.InitializeAsync();
-
-        networkClient = new NetworkClient(NetworkManager.Singleton);
 
         AuthState authState = await AuthenticationWrapper.DoAuth();
 
@@ -35,21 +27,15 @@ public class ClientGameManager : IDisposable
         return false;
     }
 
-    public void GoToMenu()
+    public async Task StartClientAsync(string joinCodeString)
     {
-        SceneManager.LoadScene(TITLE_SCREEN_STRING);
-    }
-
-    public async Task StartClientAsync(string joinCode)
-    {
-
         try
         {
-            allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+            allocation = await RelayService.Instance.JoinAllocationAsync(joinCodeString);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Debug.Log(e);
+            Debug.Log(ex);
             return;
         }
 
@@ -69,8 +55,7 @@ public class ClientGameManager : IDisposable
 
         UserData userData = new UserData
         {
-            userName = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name"),
-            playerAuthID = AuthenticationService.Instance.PlayerId
+            userName = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name")
         };
         string payload = JsonUtility.ToJson(userData);
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
