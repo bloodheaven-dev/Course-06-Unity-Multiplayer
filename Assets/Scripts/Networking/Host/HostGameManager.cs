@@ -126,14 +126,15 @@ public class HostGameManager : IDisposable
             {
                 await LobbyService.Instance.DeleteLobbyAsync(lobbyId);
             }
-            catch(LobbyServiceException e)
+            catch (LobbyServiceException e)
             {
-                Debug.LogWarning(e);
+                Debug.Log(e);
             }
 
             lobbyId = string.Empty;
         }
 
         networkServer?.Dispose();
+
     }
 }

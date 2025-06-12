@@ -50,12 +50,13 @@ public class NetworkServer : IDisposable
         if (networkManager == null) return;
 
         networkManager.ConnectionApprovalCallback -= ApprovalCheck;
-        networkManager.OnServerStarted -= OnNetworkReady;
         networkManager.OnClientDisconnectCallback -= OnPlayerDisconnect;
+        networkManager.OnServerStarted -= OnNetworkReady;
 
         if (networkManager.IsListening)
         {
             networkManager.Shutdown();
         }
+
     }
 }
