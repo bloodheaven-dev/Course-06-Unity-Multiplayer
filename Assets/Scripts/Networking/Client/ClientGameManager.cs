@@ -4,18 +4,26 @@ using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
+using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ClientGameManager
 {
-    JoinAllocation allocation;
+    private JoinAllocation allocation;
+
+    private NetworkClient networkClient;
+
+    private const string TITLE_SCREEN_STRING = "TitleScreen";
 
     public async Task<bool> InitAsync()
     {
         await UnityServices.InitializeAsync();
+
+        networkClient = new NetworkClient(NetworkManager.Singleton);
 
         AuthState authState = await AuthenticationWrapper.DoAuth();
 
@@ -27,15 +35,21 @@ public class ClientGameManager
         return false;
     }
 
-    public async Task StartClientAsync(string joinCodeString)
+    public void GoToMenu()
     {
+        SceneManager.LoadScene(TITLE_SCREEN_STRING);
+    }
+
+    public async Task StartClientAsync(string joinCode)
+    {
+
         try
         {
-            allocation = await RelayService.Instance.JoinAllocationAsync(joinCodeString);
+            allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            Debug.Log(ex);
+            Debug.Log(e);
             return;
         }
 
@@ -55,7 +69,8 @@ public class ClientGameManager
 
         UserData userData = new UserData
         {
-            userName = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name")
+            userName = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name"),
+            playerAuthID = AuthenticationService.Instance.PlayerId
         };
         string payload = JsonUtility.ToJson(userData);
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
