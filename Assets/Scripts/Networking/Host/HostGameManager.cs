@@ -136,7 +136,7 @@ public class HostGameManager : IDisposable
 
     public async void Dispose()
     {
-        HostSingleton.Instance.StopCoroutine(nameof(HearbeatLobby));
+        HostSingleton.Instance.StopCoroutine(nameof(HeartBeat));
 
         if (!string.IsNullOrEmpty(lobbyId))
         {
@@ -144,15 +144,14 @@ public class HostGameManager : IDisposable
             {
                 await LobbyService.Instance.DeleteLobbyAsync(lobbyId);
             }
-            catch (LobbyServiceException e)
+            catch(LobbyServiceException e)
             {
-                Debug.Log(e);
+                Debug.LogWarning(e);
             }
 
             lobbyId = string.Empty;
         }
 
         networkServer?.Dispose();
-
     }
 }
