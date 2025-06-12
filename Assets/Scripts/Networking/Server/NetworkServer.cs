@@ -1,59 +1,63 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class NetworkServer
+public class NetworkServer : IDisposable
 {
     private NetworkManager networkManager;
+
+    private Dictionary<ulong, string> clientIdToAuth = new Dictionary<ulong, string>();
+    private Dictionary<string, UserData> authIdToUserData = new Dictionary<string, UserData>();
 
     public NetworkServer(NetworkManager networkManager)
     {
         this.networkManager = networkManager;
 
         networkManager.ConnectionApprovalCallback += ApprovalCheck;
+        networkManager.OnServerStarted += OnNetworkReady;
     }
 
-    private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+    private void ApprovalCheck(
+        NetworkManager.ConnectionApprovalRequest request,
+        NetworkManager.ConnectionApprovalResponse response)
     {
         string payload = System.Text.Encoding.UTF8.GetString(request.Payload);
         UserData userData = JsonUtility.FromJson<UserData>(payload);
 
-        Debug.Log(userData.userName);
+        clientIdToAuth[request.ClientNetworkId] = userData.userAuthID;
+        authIdToUserData[userData.userAuthID] = userData;
 
         response.Approved = true;
         response.CreatePlayerObject = true;
     }
-<<<<<<< HEAD
+
     private void OnNetworkReady()
     {
-        networkManager.OnClientDisconnectCallback += OnPlayerDisconnect;
+        networkManager.OnClientDisconnectCallback += OnClientDisconnect;
     }
 
-    private void OnPlayerDisconnect(ulong clientID)
+    private void OnClientDisconnect(ulong clientId)
     {
-        if(clientIDToAuth.TryGetValue(clientID, out string authID))
+        if (clientIdToAuth.TryGetValue(clientId, out string authId))
         {
-            clientIDToAuth.Remove(clientID);
-
-            authIDToUserData.Remove(authID);
+            clientIdToAuth.Remove(clientId);
+            authIdToUserData.Remove(authId);
         }
     }
-<<<<<<< HEAD
+
     public void Dispose()
     {
-        if (networkManager == null) return;
+        if (networkManager == null) { return; }
 
         networkManager.ConnectionApprovalCallback -= ApprovalCheck;
+        networkManager.OnClientDisconnectCallback -= OnClientDisconnect;
         networkManager.OnServerStarted -= OnNetworkReady;
-        networkManager.OnClientDisconnectCallback -= OnPlayerDisconnect;
 
         if (networkManager.IsListening)
         {
             networkManager.Shutdown();
         }
     }
-=======
->>>>>>> parent of e9fc704 (Handling Connections)
-=======
->>>>>>> parent of df873f5 (Shutting Down Cleanly)
 }

@@ -133,28 +133,24 @@ public class HostGameManager
             yield return delay;
         }
     }
-<<<<<<< HEAD
-
     public async void Dispose()
     {
         HostSingleton.Instance.StopCoroutine(nameof(HeartBeat));
 
-        if (!string.IsNullOrEmpty(lobbyId))
+        if (!string.IsNullOrEmpty(lobbyID))
         {
             try
             {
-                await LobbyService.Instance.DeleteLobbyAsync(lobbyId);
+                await LobbyService.Instance.DeleteLobbyAsync(lobbyID);
             }
             catch(LobbyServiceException e)
             {
                 Debug.LogWarning(e);
             }
 
-            lobbyId = string.Empty;
+            lobbyID = string.Empty;
         }
 
         networkServer?.Dispose();
     }
-=======
->>>>>>> parent of df873f5 (Shutting Down Cleanly)
 }
