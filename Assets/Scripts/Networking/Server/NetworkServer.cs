@@ -43,13 +43,14 @@ public class NetworkServer : IDisposable
         if (networkManager == null) return;
 
         networkManager.ConnectionApprovalCallback -= ApprovalCheck;
-        networkManager.OnServerStarted -= OnNetworkReady;
         networkManager.OnClientDisconnectCallback -= OnPlayerDisconnect;
+        networkManager.OnServerStarted -= OnNetworkReady;
 
         if (networkManager.IsListening)
         {
             networkManager.Shutdown();
         }
+
     }
 =======
 >>>>>>> parent of e9fc704 (Handling Connections)
