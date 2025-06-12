@@ -7,6 +7,7 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
 using Unity.Services.Authentication;
+using Unity.Services.Core;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using Unity.Services.Relay;
@@ -17,17 +18,33 @@ using UnityEngine.SceneManagement;
 public class HostGameManager : IDisposable
 {
     public string JoinCode { get; private set; }
+    private string lobbyID;
 
     private Allocation allocation;
-    private string lobbyId;
-
     private NetworkServer networkServer;
 
     private const int MaxConnections = 8;
+    private const float HeartbeatTime = 15;
     private const string GAME_SCENE_STRING = "MainLevel";
 
     public async Task StartHostAsync()
     {
+        try
+        {
+            await UnityServices.InitializeAsync();
+
+            if (!AuthenticationService.Instance.IsSignedIn)
+            {
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed to initialize or authenticate: {e}");
+            return;
+        }
+
+
         try
         {
             allocation = await RelayService.Instance.CreateAllocationAsync(MaxConnections);
@@ -67,23 +84,24 @@ public class HostGameManager : IDisposable
         {
             CreateLobbyOptions lobbyOptions = new CreateLobbyOptions();
             lobbyOptions.IsPrivate = false;
-            lobbyOptions.Data = new Dictionary<string, DataObject>()
+            lobbyOptions.Data = new Dictionary<string, DataObject>
             {
                 {
-                    "JoinCode", new DataObject(
+                    "JoinCode", new DataObject
+                    (
                         visibility: DataObject.VisibilityOptions.Member,
                         value: JoinCode
                     )
                 }
             };
-            string playerName = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Unknown");
+
+            string playerName = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Unnamed Lobby");
             Lobby lobby = await LobbyService.Instance.CreateLobbyAsync($"{playerName}'s Lobby", MaxConnections, lobbyOptions);
+            lobbyID = lobby.Id;
 
-            lobbyId = lobby.Id;
-
-            HostSingleton.Instance.StartCoroutine(HearbeatLobby(15));
+            HostSingleton.Instance.StartCoroutine(HeartBeat(HeartbeatTime));
         }
-        catch (LobbyServiceException e)
+        catch(LobbyServiceException e)
         {
             Debug.Log(e);
             return;
@@ -93,8 +111,7 @@ public class HostGameManager : IDisposable
 
         UserData userData = new UserData
         {
-            userName = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name"),
-            playerAuthID = AuthenticationService.Instance.PlayerId
+            userName = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name")
         };
         string payload = JsonUtility.ToJson(userData);
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
@@ -106,19 +123,20 @@ public class HostGameManager : IDisposable
         NetworkManager.Singleton.SceneManager.LoadScene(GAME_SCENE_STRING, LoadSceneMode.Single);
     }
 
-    private IEnumerator HearbeatLobby(float waitTimeSeconds)
+
+    IEnumerator HeartBeat(float waitSeconds)
     {
-        WaitForSecondsRealtime delay = new WaitForSecondsRealtime(waitTimeSeconds);
-        while (true)
+        WaitForSecondsRealtime delay = new WaitForSecondsRealtime(waitSeconds);
+        while(true)
         {
-            LobbyService.Instance.SendHeartbeatPingAsync(lobbyId);
+            LobbyService.Instance.SendHeartbeatPingAsync(lobbyID);
             yield return delay;
         }
     }
 
     public async void Dispose()
     {
-        HostSingleton.Instance.StopCoroutine(nameof(HearbeatLobby));
+        HostSingleton.Instance.StopCoroutine(nameof(HeartBeat));
 
         if (!string.IsNullOrEmpty(lobbyId))
         {
@@ -126,15 +144,14 @@ public class HostGameManager : IDisposable
             {
                 await LobbyService.Instance.DeleteLobbyAsync(lobbyId);
             }
-            catch (LobbyServiceException e)
+            catch(LobbyServiceException e)
             {
-                Debug.Log(e);
+                Debug.LogWarning(e);
             }
 
             lobbyId = string.Empty;
         }
 
         networkServer?.Dispose();
-
     }
 }
