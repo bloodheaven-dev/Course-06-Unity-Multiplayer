@@ -2,7 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-public class NetworkServer : IDisposable
+public class NetworkServer
 {
     private NetworkManager networkManager;
 
@@ -38,6 +38,7 @@ public class NetworkServer : IDisposable
             authIDToUserData.Remove(authID);
         }
     }
+<<<<<<< HEAD
     public void Dispose()
     {
         if (networkManager == null) return;
@@ -53,4 +54,6 @@ public class NetworkServer : IDisposable
     }
 =======
 >>>>>>> parent of e9fc704 (Handling Connections)
+=======
+>>>>>>> parent of df873f5 (Shutting Down Cleanly)
 }

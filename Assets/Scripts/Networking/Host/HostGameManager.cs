@@ -15,7 +15,7 @@ using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class HostGameManager : IDisposable
+public class HostGameManager
 {
     public string JoinCode { get; private set; }
     private string lobbyID;
@@ -133,6 +133,7 @@ public class HostGameManager : IDisposable
             yield return delay;
         }
     }
+<<<<<<< HEAD
 
     public async void Dispose()
     {
@@ -154,4 +155,6 @@ public class HostGameManager : IDisposable
 
         networkServer?.Dispose();
     }
+=======
+>>>>>>> parent of df873f5 (Shutting Down Cleanly)
 }

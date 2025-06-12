@@ -46,9 +46,4 @@ public class ClientSingleton : MonoBehaviour
         SceneManager.LoadScene(TITLE_SCREEN_STRING);
     }
 
-    private void OnDestroy()
-    {
-        GameManager?.Dispose();
-    }
-
 }
