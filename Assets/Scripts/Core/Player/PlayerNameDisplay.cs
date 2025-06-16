@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerNameDisplay : MonoBehaviour
 {
-    [SerializeField] private PlayerCam player;
+    [SerializeField] private PlayerLogic player;
     [SerializeField] private TMP_Text displayPlayerName;
 
     private void Start()

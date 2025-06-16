@@ -653,11 +653,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5347959394891648359}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1874c758d3880644bb08a33a279232fe, type: 3}
+  m_Script: {fileID: 11500000, guid: f32b5b5cc1b6fc244b209666e6a91ab5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   playerCam: {fileID: 2019730415770162482}
+  <Health>k__BackingField: {fileID: -3086586347962755986}
   ownerPriority: 10
   PlayerName:
     m_InternalValue:
