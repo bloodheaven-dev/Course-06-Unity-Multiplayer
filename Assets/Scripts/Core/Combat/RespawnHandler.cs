@@ -14,6 +14,7 @@ public class RespawnHandler : NetworkBehaviour
         PlayerLogic[] players = FindObjectsByType<PlayerLogic>(FindObjectsSortMode.None);
 
         foreach (PlayerLogic player in players)
+        {
             HandlePlayerSpawn(player);
         }
 
