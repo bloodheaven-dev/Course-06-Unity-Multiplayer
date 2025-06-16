@@ -15,13 +15,13 @@ using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class HostGameManager
+public class HostGameManager : IDisposable
 {
     public string JoinCode { get; private set; }
     private string lobbyID;
 
     private Allocation allocation;
-    private NetworkServer networkServer;
+    public NetworkServer NetworkServer { get; private set; }
 
     private const int MaxConnections = 8;
     private const float HeartbeatTime = 15;
@@ -107,7 +107,7 @@ public class HostGameManager
             return;
         }
 
-        networkServer = new NetworkServer(NetworkManager.Singleton);
+        NetworkServer = new NetworkServer(NetworkManager.Singleton);
 
         UserData userData = new UserData
         {
@@ -151,6 +151,7 @@ public class HostGameManager
             lobbyID = string.Empty;
         }
 
-        networkServer?.Dispose();
+        NetworkServer?.Dispose();
     }
+
 }

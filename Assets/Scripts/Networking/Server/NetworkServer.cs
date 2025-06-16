@@ -30,7 +30,23 @@ public class NetworkServer : IDisposable
         authIdToUserData[userData.userAuthID] = userData;
 
         response.Approved = true;
+        //response.Position = SpawnPoint.GetRandomSpawnPointPos();
+        //response.Rotation = Quaternion.identity;
         response.CreatePlayerObject = true;
+    }
+
+    public UserData GetUserDataByClientID(ulong clientNetworkId)
+    {
+        if (clientIdToAuth.TryGetValue(clientNetworkId, out string data))
+        {
+            if (authIdToUserData.TryGetValue(data, out UserData userData))
+            {
+                return userData;
+            }
+
+            return null;
+        }
+        return null;
     }
 
     private void OnNetworkReady()
