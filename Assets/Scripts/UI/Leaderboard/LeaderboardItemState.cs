@@ -2,7 +2,7 @@ using System;
 using Unity.Collections;
 using Unity.Netcode;
 
-public struct LeaderboardState : INetworkSerializable, IEquatable<LeaderboardState>
+public struct LeaderboardItemState : INetworkSerializable, IEquatable<LeaderboardItemState>
 {
     public ulong ClientId;
     public FixedString32Bytes PlayerName;
@@ -15,7 +15,7 @@ public struct LeaderboardState : INetworkSerializable, IEquatable<LeaderboardSta
         serializer.SerializeValue(ref Coins);
     }
 
-    public bool Equals(LeaderboardState other)
+    public bool Equals(LeaderboardItemState other)
     {
         return
             //

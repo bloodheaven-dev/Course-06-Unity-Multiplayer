@@ -2969,8 +2969,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  leaderboardHolder: {fileID: 230268888}
-  leaderboardContentPrefab: {fileID: 4737439178249862369, guid: c7eea4af1b29fc341b7f34a7c94e945e, type: 3}
+  leaderboardItemContent: {fileID: 230268888}
+  leaderboardItemPrefab: {fileID: 4737439178249862369, guid: c7eea4af1b29fc341b7f34a7c94e945e, type: 3}
 --- !u!1 &1059710969
 GameObject:
   m_ObjectHideFlags: 0
