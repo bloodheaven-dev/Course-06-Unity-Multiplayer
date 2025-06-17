@@ -659,7 +659,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   playerCam: {fileID: 2019730415770162482}
   <Health>k__BackingField: {fileID: -3086586347962755986}
+  <Wallet>k__BackingField: {fileID: -2388654680310045519}
   ownerPriority: 10
+  localColor: {r: 0.764151, g: 0.7149406, b: 0.47218764, a: 0}
   PlayerName:
     m_InternalValue:
       utf8LengthInBytes: 0

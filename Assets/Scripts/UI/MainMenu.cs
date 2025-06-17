@@ -22,7 +22,7 @@ public class MainMenu : MonoBehaviour
 
     async void StartClientButton()
     {
-        string joinCodeString = joinCodeField.text;
-        await ClientSingleton.Instance.GameManager.StartClientAsync(joinCodeString);
+            string joinCodeString = joinCodeField.text;
+            await ClientSingleton.Instance.GameManager.StartClientAsync(joinCodeString);
     }
 }

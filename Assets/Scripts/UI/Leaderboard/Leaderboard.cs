@@ -14,6 +14,8 @@ public class Leaderboard : NetworkBehaviour
     private NetworkList<LeaderboardItemState> leaderboardItems;
     private List<LeaderboardItemDisplay> itemDisplays = new List<LeaderboardItemDisplay>();
 
+    private int itemsToDisplay = 8;
+
     private void Awake()
     {
         leaderboardItems = new NetworkList<LeaderboardItemState>();
@@ -105,6 +107,29 @@ public class Leaderboard : NetworkBehaviour
 
                 break;
         }
+
+        itemDisplays.Sort((x, y) => y.Coins.CompareTo(x.Coins));
+
+        for (int i = 0; i < itemDisplays.Count; i++)
+        {
+            itemDisplays[i].transform.SetSiblingIndex(i);
+            itemDisplays[i].UpdateText();
+
+            bool shouldShow = i <= itemsToDisplay - 1;
+            itemDisplays[i].gameObject.SetActive(shouldShow);
+
+        }
+
+        LeaderboardItemDisplay localDisplay = itemDisplays.FirstOrDefault(x => x.ClientId == NetworkManager.Singleton.LocalClientId);
+
+        if (localDisplay != null)
+        {
+            if (localDisplay.transform.GetSiblingIndex() >= itemsToDisplay)
+            {
+                leaderboardItemContent.GetChild(itemsToDisplay - 1).gameObject.SetActive(false);
+                localDisplay.gameObject.SetActive(true);
+            }
+        }
     }
 
     private void HandlePlayerSpawned(PlayerTank player)
@@ -115,6 +140,8 @@ public class Leaderboard : NetworkBehaviour
             PlayerName = player.PlayerName.Value,
             Coins = 0
         });
+
+        player.Wallet.TotalCoins.OnValueChanged += (oldValue, newValue) => HandleCoinChanged(player.OwnerClientId, newValue);
     }
 
     private void HandlePlayerDespawned(PlayerTank player)
@@ -128,6 +155,25 @@ public class Leaderboard : NetworkBehaviour
             leaderboardItems.Remove(entity);
 
             break;
+        }
+
+        player.Wallet.TotalCoins.OnValueChanged -= (oldValue, newValue) => HandleCoinChanged(player.OwnerClientId, newValue);
+    }
+
+    private void HandleCoinChanged(ulong clientId, int coins)
+    {
+        for (int i = 0; i < leaderboardItems.Count; i++)
+        {
+            if (clientId != leaderboardItems[i].ClientId) continue;
+
+            leaderboardItems[i] = new LeaderboardItemState
+            {
+                ClientId = leaderboardItems[i].ClientId,
+                PlayerName = leaderboardItems[i].PlayerName.Value,
+                Coins = coins
+            };
+
+            return;
         }
     }
 }
