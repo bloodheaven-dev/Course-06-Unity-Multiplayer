@@ -291,7 +291,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     /// </summary>
     public void Dispose()
     {
-        UnityEngine.Object.Destroy(asset);
+        UnityEngine.Object.DestroyImmediate(asset);
     }
 
     /// <inheritdoc cref="UnityEngine.InputSystem.InputActionAsset.bindingMask" />

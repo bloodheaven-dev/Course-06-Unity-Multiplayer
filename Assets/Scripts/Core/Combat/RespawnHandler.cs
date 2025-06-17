@@ -11,15 +11,15 @@ public class RespawnHandler : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        PlayerLogic[] players = FindObjectsByType<PlayerLogic>(FindObjectsSortMode.None);
+        PlayerTank[] players = FindObjectsByType<PlayerTank>(FindObjectsSortMode.None);
 
-        foreach (PlayerLogic player in players)
+        foreach (PlayerTank player in players)
         {
             HandlePlayerSpawn(player);
         }
 
-        PlayerLogic.OnPlayerSpawned += HandlePlayerSpawn;
-        PlayerLogic.OnPlayerDespawned += HandlePlayerDespawn;
+        PlayerTank.OnPlayerSpawned += HandlePlayerSpawn;
+        PlayerTank.OnPlayerDespawned += HandlePlayerDespawn;
 
     }
 
@@ -27,21 +27,21 @@ public class RespawnHandler : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        PlayerLogic.OnPlayerSpawned -= HandlePlayerSpawn;
-        PlayerLogic.OnPlayerDespawned -= HandlePlayerDespawn;
+        PlayerTank.OnPlayerSpawned -= HandlePlayerSpawn;
+        PlayerTank.OnPlayerDespawned -= HandlePlayerDespawn;
     }
 
-    private void HandlePlayerSpawn(PlayerLogic player)
+    private void HandlePlayerSpawn(PlayerTank player)
     {
         player.Health.OnDie += (health) => HandlePlayerDie(player);
     }
 
-    private void HandlePlayerDespawn(PlayerLogic player)
+    private void HandlePlayerDespawn(PlayerTank player)
     {
         player.Health.OnDie -= (health) => HandlePlayerDie(player);
     }
 
-    private void HandlePlayerDie(PlayerLogic player)
+    private void HandlePlayerDie(PlayerTank player)
     {
         Destroy(player.gameObject);
 

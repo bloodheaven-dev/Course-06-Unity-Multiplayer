@@ -4,7 +4,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerLogic : NetworkBehaviour
+public class PlayerTank : NetworkBehaviour
 {
     [Header("References")]
     [SerializeField] CinemachineCamera playerCam;
@@ -15,8 +15,8 @@ public class PlayerLogic : NetworkBehaviour
 
     public NetworkVariable<FixedString32Bytes> PlayerName = new NetworkVariable<FixedString32Bytes>();
 
-    public static event Action<PlayerLogic> OnPlayerSpawned;
-    public static event Action<PlayerLogic> OnPlayerDespawned;
+    public static event Action<PlayerTank> OnPlayerSpawned;
+    public static event Action<PlayerTank> OnPlayerDespawned;
 
     public override void OnNetworkSpawn()
     {
