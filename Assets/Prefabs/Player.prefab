@@ -779,6 +779,15 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   TotalCoins:
     m_InternalValue: 0
+  health: {fileID: -3086586347962755986}
+  coinPrefab: {fileID: -3992618170794416380, guid: 03624cd48ce5fd0429d3f2a3dd6f98f2, type: 3}
+  bountyPercentage: 0.25
+  coinSpread: 3
+  bountyCoinCount: 10
+  minBountyCoinValue: 5
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!1 &7394281804241585406
 GameObject:
   m_ObjectHideFlags: 0

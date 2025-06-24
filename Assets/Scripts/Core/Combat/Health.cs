@@ -18,6 +18,11 @@ public class Health : NetworkBehaviour
         CurrentHealth.Value = MaxHealth;
     }
 
+    /*private void Update()
+    {
+        ModifyHealth(0);
+    }*/
+
     public void TakeDamage(int damageValue)
     {
         ModifyHealth(-damageValue);
