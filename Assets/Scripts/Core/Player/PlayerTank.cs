@@ -2,6 +2,7 @@ using System;
 using Unity.Cinemachine;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 
 public class PlayerTank : NetworkBehaviour

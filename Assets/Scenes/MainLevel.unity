@@ -2955,7 +2955,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  playerPrefab: {fileID: 7446327817386886090, guid: 20e0783c733243845adcae9ff878bdb3, type: 3}
+  playerPrefab: {fileID: 5016154992718917740, guid: 20e0783c733243845adcae9ff878bdb3, type: 3}
+  keptCoinsPercentage: 0.25
 --- !u!114 &1056760226
 MonoBehaviour:
   m_ObjectHideFlags: 0

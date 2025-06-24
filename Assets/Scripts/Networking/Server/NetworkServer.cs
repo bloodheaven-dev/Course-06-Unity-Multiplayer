@@ -30,8 +30,8 @@ public class NetworkServer : IDisposable
         authIdToUserData[userData.userAuthID] = userData;
 
         response.Approved = true;
-        //response.Position = SpawnPoint.GetRandomSpawnPointPos();
-        //response.Rotation = Quaternion.identity;
+        response.Position = SpawnPoint.GetRandomSpawnPointPos();
+        response.Rotation = Quaternion.identity;
         response.CreatePlayerObject = true;
     }
 

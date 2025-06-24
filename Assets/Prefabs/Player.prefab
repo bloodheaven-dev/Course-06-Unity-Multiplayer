@@ -482,7 +482,6 @@ GameObject:
   - component: {fileID: 8833563971989907332}
   - component: {fileID: 5016154992718917740}
   - component: {fileID: 1339539893591281900}
-  - component: {fileID: 9203214277262100538}
   - component: {fileID: -224098812716263717}
   - component: {fileID: -3086586347962755986}
   - component: {fileID: -2244602877352680410}
@@ -661,7 +660,6 @@ MonoBehaviour:
   <Health>k__BackingField: {fileID: -3086586347962755986}
   <Wallet>k__BackingField: {fileID: -2388654680310045519}
   ownerPriority: 10
-  localColor: {r: 0.764151, g: 0.7149406, b: 0.47218764, a: 0}
   PlayerName:
     m_InternalValue:
       utf8LengthInBytes: 0
@@ -711,18 +709,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 5016154992718917740}
   displayPlayerName: {fileID: 6839523162854869464}
---- !u!114 &9203214277262100538
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5347959394891648359}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f811a23397411e48a329a33371dcbb2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &-224098812716263717
 MonoBehaviour:
   m_ObjectHideFlags: 0
