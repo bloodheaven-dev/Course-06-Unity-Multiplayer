@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7107753486783934067}
   - component: {fileID: 591350267335433031}
   - component: {fileID: -303027620107155625}
+  - component: {fileID: 8751955578773091381}
   - component: {fileID: -7909544376837489589}
   m_Layer: 2
   m_Name: Rock_Large
@@ -319,6 +320,31 @@ PolygonCollider2D:
       - {x: -0.52734375, y: -3.8398438}
       - {x: -0.40234375, y: -3.8242188}
   m_UseDelaunayMesh: 0
+--- !u!114 &8751955578773091381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2791547822438345151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2894729645
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &-7909544376837489589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -331,4 +357,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f55e0f7c15660104c97ac4635b277783, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   movementSpeedValue: 2.5
