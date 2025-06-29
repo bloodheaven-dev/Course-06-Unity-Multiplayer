@@ -21,6 +21,8 @@ public class ClientGameManager : IDisposable
 
     public async Task<bool> InitAsync()
     {
+        AuthenticationWrapper.ResetAuthState();
+
         await UnityServices.InitializeAsync();
 
         networkClient = new NetworkClient(NetworkManager.Singleton);
@@ -33,11 +35,6 @@ public class ClientGameManager : IDisposable
         }
 
         return false;
-    }
-
-    public void GoToMenu()
-    {
-        SceneManager.LoadScene(TITLE_SCREEN_STRING);
     }
 
     public async Task StartClientAsync(string joinCode)

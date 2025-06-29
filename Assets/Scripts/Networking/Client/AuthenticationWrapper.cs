@@ -81,8 +81,10 @@ public static class AuthenticationWrapper
 
         return AuthState;
     }
-
-
+    public static void ResetAuthState()
+    {
+        AuthState = AuthState.NotAuthenticated;
+    }
 }
 
 public enum AuthState
@@ -93,3 +95,4 @@ public enum AuthState
     Error,
     Timeout
 }
+

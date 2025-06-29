@@ -32,6 +32,7 @@ public class ApplicationController : MonoBehaviour
             bool isAuthenticated = await clientSingleton.CreateClient();
 
 
+
             if(isAuthenticated)
             {
                 clientSingleton.ChangeScene();
