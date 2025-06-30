@@ -21,12 +21,17 @@ public class NetworkClient : IDisposable
     {
         if (clientID != 0 && clientID != networkManager.LocalClientId) return;
 
-        if(SceneManager.GetActiveScene().name != MENU_SCENE_NAME)
+        Disconnect();
+    }
+
+    public void Disconnect()
+    {
+        if (SceneManager.GetActiveScene().name != MENU_SCENE_NAME)
         {
             SceneManager.LoadScene(MENU_SCENE_NAME);
         }
 
-        if(networkManager.IsConnectedClient)
+        if (networkManager.IsConnectedClient)
         {
             networkManager.Shutdown();
         }
@@ -39,4 +44,6 @@ public class NetworkClient : IDisposable
             networkManager.OnClientDisconnectCallback -= OnPlayerDisconnect;
         }
     }
+
+
 }

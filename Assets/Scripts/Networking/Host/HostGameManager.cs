@@ -120,7 +120,21 @@ public class HostGameManager : IDisposable
 
         NetworkManager.Singleton.StartHost();
 
+        NetworkServer.OnPlayerLeft += HandlePlayerLeft;
+
         NetworkManager.Singleton.SceneManager.LoadScene(GAME_SCENE_STRING, LoadSceneMode.Single);
+    }
+
+    private async void HandlePlayerLeft(string authId)
+    {
+        try
+        {
+            await LobbyService.Instance.RemovePlayerAsync(lobbyID, authId);
+        }
+        catch(LobbyServiceException e)
+        {
+            Debug.LogWarning(e);
+        }
     }
 
 
@@ -133,7 +147,12 @@ public class HostGameManager : IDisposable
             yield return delay;
         }
     }
-    public async void Dispose()
+    public void Dispose()
+    {
+        Shutdown();
+    }
+
+    public async void Shutdown()
     {
         HostSingleton.Instance.StopCoroutine(nameof(HeartBeat));
 
@@ -143,7 +162,7 @@ public class HostGameManager : IDisposable
             {
                 await LobbyService.Instance.DeleteLobbyAsync(lobbyID);
             }
-            catch(LobbyServiceException e)
+            catch (LobbyServiceException e)
             {
                 Debug.LogWarning(e);
             }
@@ -151,7 +170,10 @@ public class HostGameManager : IDisposable
             lobbyID = string.Empty;
         }
 
+        NetworkServer.OnPlayerLeft -= HandlePlayerLeft;
+
         NetworkServer?.Dispose();
     }
+
 
 }
