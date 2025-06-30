@@ -18,11 +18,18 @@ public class HealingZone : NetworkBehaviour
     [SerializeField] private float healTickRate = 1f;
     [SerializeField] private float healCooldown = 60f;
 
-    private float remainingCooldown;
-    private float tickTimer;
+    private Collider2D healingZone;
+    private Coroutine healTickCoroutine;
+    private float currentCooldown;
+    private bool canHeal = true;
 
     private List<PlayerTank> playersInZone = new List<PlayerTank>();
     private NetworkVariable<float> HealPower = new NetworkVariable<float>();
+
+    private void Awake()
+    {
+        healingZone = GetComponent<Collider2D>();
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -33,8 +40,8 @@ public class HealingZone : NetworkBehaviour
 
         if (IsClient)
         {
-            HealPower.OnValueChanged += HandleHealPower;
-            HandleHealPower(0, HealPower.Value);
+            HealPower.OnValueChanged += HandleDisplayHealPower;
+            HandleDisplayHealPower(0, HealPower.Value);
         }
     }
 
@@ -42,70 +49,78 @@ public class HealingZone : NetworkBehaviour
     {
         if (IsClient)
         {
-            HealPower.OnValueChanged -= HandleHealPower;
+            HealPower.OnValueChanged -= HandleDisplayHealPower;
         }
     }
 
-    private void HandleHealPower(float oldHealPower, float newHealPower)
+    private void HandleDisplayHealPower(float oldHealPower, float newHealPower)
     {
         healthBar.fillAmount = newHealPower / maxHealPower;
     }
 
-    private void Update()
+
+    private IEnumerator HealTickCoroutine()
     {
-        if (!IsServer) return;
+        WaitForSeconds wait = new WaitForSeconds(healTickRate);
 
-        if (remainingCooldown > 0f)
+        while(canHeal)
         {
-            remainingCooldown -= Time.deltaTime;
-
-            float percentage = 1f - (remainingCooldown / healCooldown);
-
-            HealPower.Value = maxHealPower * percentage;
-
-            if (remainingCooldown <= 0f)
+            if(currentCooldown <= 0f)
             {
-
-                if (!ColorUtility.TryParseHtmlString("#42B243", out Color newColor)) return;
-
-                healthBar.color = newColor;
-                HealPower.Value = maxHealPower;
+                HealPlayer();
             }
-            else
-            {
-                return;
-            }
+
+            yield return wait;
         }
 
-        tickTimer += Time.deltaTime;
-        if(tickTimer >= 1 / healTickRate)
+    }
+
+    private void HealPlayer()
+    {
+        foreach (PlayerTank player in playersInZone)
         {
-            foreach(PlayerTank player in playersInZone)
+            if (HealPower.Value == 0) break;
+            if (player.Health.CurrentHealth.Value == player.Health.MaxHealth) continue;
+            if (player.Wallet.TotalCoins.Value < costPerTick) continue;
+
+            player.Health.RestoreHealth(healPerTick);
+            player.Wallet.SpendCoins(costPerTick);
+
+            HealPower.Value -= 1;
+
+            if (HealPower.Value == 0 && canHeal)
             {
-                if (HealPower.Value == 0) break;
+                canHeal = false;
 
-                if (player.Health.CurrentHealth.Value == player.Health.MaxHealth) continue;
+                healthBar.color = Color.darkRed;
+                currentCooldown = healCooldown;
+                StartCoroutine(CooldownCoroutine());
 
-                if (player.Wallet.TotalCoins.Value < costPerTick) continue;
-
-                player.Wallet.SpendCoins(costPerTick);
-                player.Health.RestoreHealth(healPerTick);
-
-                HealPower.Value -= 1;
-
-                if (HealPower.Value <= 0)
-                {
-                    if (!ColorUtility.TryParseHtmlString("#570000", out Color newColor)) return;
-                    healthBar.color = newColor;
-
-                    remainingCooldown = healCooldown;
-                }
-
+                break;
             }
 
-            tickTimer = tickTimer % (1 / healTickRate);
+        }
+    }
+
+    private IEnumerator CooldownCoroutine()
+    {
+        WaitForSeconds wait = new WaitForSeconds(healTickRate / 4);
+
+        while(currentCooldown > 0f)
+        {
+            currentCooldown -= healTickRate / 4;
+            float percentage = 1f - (currentCooldown / healCooldown);
+            HandleDisplayHealPower(0, maxHealPower * percentage);
+
+            yield return wait;
         }
 
+        healthBar.color = Color.green;
+        HealPower.Value = maxHealPower;
+        canHeal = true;
+
+        healingZone.enabled = false;
+        healingZone.enabled = true;
 
     }
 
@@ -115,7 +130,13 @@ public class HealingZone : NetworkBehaviour
 
         if (!collision.attachedRigidbody.TryGetComponent<PlayerTank>(out PlayerTank player)) return;
 
+
         playersInZone.Add(player);
+
+        if (healTickCoroutine == null)
+        {
+            healTickCoroutine = StartCoroutine(HealTickCoroutine());
+        }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
@@ -124,5 +145,10 @@ public class HealingZone : NetworkBehaviour
         if (!collision.attachedRigidbody.TryGetComponent<PlayerTank>(out PlayerTank player)) return;
 
         playersInZone.Remove(player);
+
+        if (playersInZone.Count > 0 || healTickCoroutine == null) return;
+
+        StopCoroutine(healTickCoroutine);
+        healTickCoroutine = null;
     }
 }
