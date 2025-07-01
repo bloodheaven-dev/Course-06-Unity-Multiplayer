@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 
 public class NetworkServer : IDisposable
@@ -9,7 +10,7 @@ public class NetworkServer : IDisposable
     private NetworkManager networkManager;
 
     private Dictionary<ulong, string> clientIdToAuth = new Dictionary<ulong, string>();
-    private Dictionary<string, UserData> authIdToUserData = new Dictionary<string, UserData>();
+    private Dictionary<string, GameData> authIdToUserData = new Dictionary<string, GameData>();
 
     public Action<string> OnPlayerLeft;
 
@@ -21,15 +22,23 @@ public class NetworkServer : IDisposable
         networkManager.OnServerStarted += OnNetworkReady;
     }
 
+    public bool OpenConnection(string ip, int port)
+    {
+        UnityTransport transport = networkManager.GetComponent<UnityTransport>();
+        transport.SetConnectionData(ip, (ushort)port);
+
+        return networkManager.StartServer();
+    }
+
     private void ApprovalCheck(
         NetworkManager.ConnectionApprovalRequest request,
         NetworkManager.ConnectionApprovalResponse response)
     {
         string payload = System.Text.Encoding.UTF8.GetString(request.Payload);
-        UserData userData = JsonUtility.FromJson<UserData>(payload);
+        GameData userData = JsonUtility.FromJson<GameData>(payload);
 
-        clientIdToAuth[request.ClientNetworkId] = userData.userAuthID;
-        authIdToUserData[userData.userAuthID] = userData;
+        clientIdToAuth[request.ClientNetworkId] = userData.userAuthId;
+        authIdToUserData[userData.userAuthId] = userData;
 
         response.Approved = true;
         response.Position = SpawnPoint.GetRandomSpawnPointPos();
@@ -37,11 +46,11 @@ public class NetworkServer : IDisposable
         response.CreatePlayerObject = true;
     }
 
-    public UserData GetUserDataByClientID(ulong clientNetworkId)
+    public GameData GetUserDataByClientID(ulong clientNetworkId)
     {
         if (clientIdToAuth.TryGetValue(clientNetworkId, out string data))
         {
-            if (authIdToUserData.TryGetValue(data, out UserData userData))
+            if (authIdToUserData.TryGetValue(data, out GameData userData))
             {
                 return userData;
             }
