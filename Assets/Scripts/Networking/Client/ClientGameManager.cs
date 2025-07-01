@@ -63,10 +63,10 @@ public class ClientGameManager : IDisposable
         );
         transport.SetRelayServerData(relayServerData);
 
-        GameData userData = new GameData
+        UserData userData = new UserData
         {
             userName = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name"),
-            userAuthId = AuthenticationService.Instance.PlayerId
+            userAuthID = AuthenticationService.Instance.PlayerId
         };
         string payload = JsonUtility.ToJson(userData);
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);

@@ -109,7 +109,7 @@ public class HostGameManager : IDisposable
 
         NetworkServer = new NetworkServer(NetworkManager.Singleton);
 
-        GameData userData = new GameData
+        UserData userData = new UserData
         {
             userName = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name")
         };
