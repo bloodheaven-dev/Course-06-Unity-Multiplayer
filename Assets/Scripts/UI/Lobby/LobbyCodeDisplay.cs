@@ -1,25 +1,24 @@
 using TMPro;
 using UnityEngine;
-
-public class LobbyCodeDisplay : MonoBehaviour
+using Unity.Netcode;
+using Unity.Collections;
+public class LobbyCodeDisplay : NetworkBehaviour
 {
-    [SerializeField] TMP_Text lobbyCode;
+    [SerializeField] private TMP_Text lobbyCode;
 
-    HostGameManager GameManager;
+    private HostGameManager GameManager;
 
-    void Start()
+    private NetworkVariable<FixedString32Bytes> LobbyCodeText = new NetworkVariable<FixedString32Bytes>();
+
+    public override void OnNetworkSpawn()
     {
         GameManager = HostSingleton.Instance?.GameManager;
 
-        if (GameManager != null)
+        if (IsServer)
         {
-            lobbyCode.text = GameManager.JoinCode;
+            LobbyCodeText.Value = GameManager.JoinCode;
         }
-        else
-        {
-            lobbyCode.text = "No Join Code";
-            Debug.LogWarning("GameManager is null in LobbyCodeDisplay.");
-        }
-    }
 
+        lobbyCode.text = LobbyCodeText.Value.ToString();
+    }
 }
