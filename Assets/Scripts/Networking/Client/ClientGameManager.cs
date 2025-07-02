@@ -16,6 +16,9 @@ public class ClientGameManager : IDisposable
     private JoinAllocation allocation;
 
     private NetworkClient networkClient;
+    private MatchplayMatchmaker matchplayMatchmaker;
+
+    private GameData userData;
 
     private const string TITLE_SCREEN_STRING = "TitleScreen";
 
@@ -26,11 +29,17 @@ public class ClientGameManager : IDisposable
         await UnityServices.InitializeAsync();
 
         networkClient = new NetworkClient(NetworkManager.Singleton);
+        matchplayMatchmaker = new MatchplayMatchmaker();
 
         AuthState authState = await AuthenticationWrapper.DoAuth();
 
         if (authState == AuthState.Authenticated)
         {
+            userData = new GameData
+            {
+                userName = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name"),
+                userAuthId = AuthenticationService.Instance.PlayerId
+            };
             return true;
         }
 
@@ -63,17 +72,24 @@ public class ClientGameManager : IDisposable
         );
         transport.SetRelayServerData(relayServerData);
 
-        GameData userData = new GameData
-        {
-            userName = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name"),
-            userAuthId = AuthenticationService.Instance.PlayerId
-        };
         string payload = JsonUtility.ToJson(userData);
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
 
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
 
         NetworkManager.Singleton.StartClient();
+    }
+
+    private async Task<MatchmakerPollingResult> GetMatchAsync()
+    {
+        MatchmakingResult matchmakingResult = await matchplayMatchmaker.Matchmake(userData);
+
+        if(matchmakingResult.result == MatchmakerPollingResult.Success)
+        {
+            // Connect to Server
+        }
+
+        return matchmakingResult.result;
     }
 
     public void Disconnect()

@@ -39,7 +39,7 @@ public class PlayerTank : NetworkBehaviour
             playerCam.Priority = ownerPriority;
             playerSprite.color = ownerColor;
 
-            Cursor.SetCursor(crosshair, new Vector2(crosshair.width / 2, crosshair.height / 2), CursorMode.Auto);
+            //Cursor.SetCursor(crosshair, new Vector2(crosshair.width / 2, crosshair.height / 2), CursorMode.Auto);
         }
     }
 

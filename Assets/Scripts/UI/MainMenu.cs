@@ -9,10 +9,13 @@ public class MainMenu : MonoBehaviour
     [SerializeField] Button hostButton;
     [SerializeField] Button joinButton;
     [SerializeField] TMP_InputField joinCodeField;
+    [SerializeField] TMP_Text queueStatus;
+    [SerializeField] TMP_Text queueTime;
 
     private bool isInQueue;
+    private bool isCancelling;
+
     private TMP_Text findGameText;
-    private Image findGameDisplay;
 
     void Start()
     {
@@ -25,24 +28,35 @@ public class MainMenu : MonoBehaviour
         joinButton.onClick.AddListener(StartClientButton);
 
         findGameText = findGameButton.GetComponentInChildren<TMP_Text>();
-        findGameDisplay = findGameText.GetComponentInChildren<Image>();
-        findGameDisplay.gameObject.SetActive(false);
     }
 
-    void FindGameButton()
+    private async void FindGameButton()
     {
-        isInQueue = !isInQueue;
-        
+        if (isCancelling) return;
+
         if (isInQueue)
         {
-            findGameText.text = "Cancel";
-        }
-        else
-        {
+            queueStatus.text = "Cancelling...";
+
+            isCancelling = true;
+
+            //await Stop Queue
+
+            isCancelling = false;
+            isInQueue = false;
+
             findGameText.text = "Find Game";
+            queueStatus.text = string.Empty;
+            queueTime.text = string.Empty;
+
+            return;
         }
 
-        findGameDisplay.gameObject.SetActive(isInQueue);
+        isInQueue = true;
+
+        findGameText.text = "Cancel";
+        queueStatus.text = "Searching...";
+        queueTime.text = "0:00";
     }
 
     async void StartHostButton()
