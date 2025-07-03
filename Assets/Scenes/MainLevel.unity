@@ -2207,7 +2207,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: f5cdd1cbc79b7414b982a3559b864a0b, type: 2}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
-    ConnectionApproval: 1
+    ConnectionApproval: 0
     ConnectionData: 
     EnableTimeResync: 0
     TimeResyncInterval: 30
@@ -6410,7 +6410,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1273057270}
   - component: {fileID: 1273057269}
-  - component: {fileID: 1273057268}
   - component: {fileID: 1273057267}
   - component: {fileID: 1273057266}
   m_Layer: 0
@@ -6450,20 +6449,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   playerPrefab: {fileID: 5016154992718917740, guid: 20e0783c733243845adcae9ff878bdb3, type: 3}
   keptCoinsPercentage: 0.25
---- !u!114 &1273057268
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1273057265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f615bade70f22e246801f47b5227496b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  lobbyCode: {fileID: 1216103643}
 --- !u!114 &1273057269
 MonoBehaviour:
   m_ObjectHideFlags: 0

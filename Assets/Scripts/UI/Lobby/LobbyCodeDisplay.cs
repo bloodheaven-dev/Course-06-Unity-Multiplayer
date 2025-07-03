@@ -12,6 +12,8 @@ public class LobbyCodeDisplay : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        if (HostSingleton.Instance == null) return;
+
         GameManager = HostSingleton.Instance?.GameManager;
 
         if (IsServer)

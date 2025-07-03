@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 using Unity.Services.Core;
 using UnityEngine;
 using Unity.Netcode;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class ServerSingleton : MonoBehaviour
 {
-
     static ServerSingleton instance;
     public ServerGameManager GameManager { get; private set; }
 
@@ -33,6 +34,7 @@ public class ServerSingleton : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
     }
+
 
     public async Task CreateServer()
     {

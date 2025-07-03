@@ -27,7 +27,17 @@ public class PlayerTank : NetworkBehaviour
     {
         if (IsServer)
         {
-            GameData userData = HostSingleton.Instance.GameManager.NetworkServer.GetUserDataByClientID(OwnerClientId);
+            GameData userData = null;
+
+            if(IsHost)
+            {
+                userData = HostSingleton.Instance.GameManager.NetworkServer.GetUserDataByClientID(OwnerClientId);
+
+            }
+            else
+            {
+                userData = ServerSingleton.Instance.GameManager.NetworkServer.GetUserDataByClientID(OwnerClientId);
+            }
 
             PlayerName.Value = userData.userName;
 

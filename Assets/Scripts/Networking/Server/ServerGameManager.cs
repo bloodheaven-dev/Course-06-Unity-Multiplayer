@@ -1,34 +1,40 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Services.Matchmaker.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
 public class ServerGameManager : IDisposable
 {
-    private const string GAME_SCENE_STRING = "MainLevel";
-
     private string serverIP;
     private int serverPort;
     private int queryPort;
-   
-    private NetworkServer networkServer;
-    private MultiplayAllocationService multiplayAllocationService;
     private MatchplayBackfiller backfiller;
+#if UNITY_SERVER
+    private MultiplayAllocationService multiplayAllocationService;
+#endif
+    private Dictionary<string, int> teamIdToTeamIndex = new Dictionary<string, int>();
+    public NetworkServer NetworkServer { get; private set; }
+
+    private const string GAME_SCENE_STRING = "MainLevel";
 
     public ServerGameManager(string serverIP, int serverPort, int queryPort, NetworkManager manager)
     {
         this.serverIP = serverIP;
         this.serverPort = serverPort;
         this.queryPort = queryPort;
-        networkServer = new NetworkServer(manager);
+        NetworkServer = new NetworkServer(manager);
+        #if UNITY_SERVER
         multiplayAllocationService = new MultiplayAllocationService();
+        #endif
     }
 
     public async Task StartGameServerAsync()
     {
+#if UNITY_SERVER
+
         await multiplayAllocationService.BeginServerCheck();
 
         try
@@ -38,13 +44,12 @@ public class ServerGameManager : IDisposable
             if (matchmakerPayload != null)
             {
                 await StartBackfill(matchmakerPayload);
-
-                networkServer.OnUserJoined += UserJoined;
-                networkServer.OnUserJoined += UserLeft;
+                NetworkServer.OnUserJoined += UserJoined;
+                NetworkServer.OnUserLeft += UserLeft;
             }
             else
             {
-                Debug.LogWarning("Payload timed out");
+                Debug.LogWarning("Matchmaker payload timed out");
             }
         }
         catch (Exception e)
@@ -52,13 +57,27 @@ public class ServerGameManager : IDisposable
             Debug.LogWarning(e);
         }
 
-        if(!networkServer.OpenConnection(serverIP, serverPort))
+        if (!NetworkServer.OpenConnection(serverIP, serverPort))
         {
-            Debug.LogWarning("Server could not be started.");
+            Debug.LogWarning("NetworkServer did not start as expected");
             return;
         }
 
         NetworkManager.Singleton.SceneManager.LoadScene(GAME_SCENE_STRING, LoadSceneMode.Single);
+#endif
+    }
+
+
+#if UNITY_SERVER
+    private async Task<MatchmakingResults> GetMatchmakerPayload()
+    {
+        Task<MatchmakingResults> matchmakerPayloadTask = multiplayAllocationService.SubscribeAndAwaitMatchmakerAllocation();
+        if (await Task.WhenAny(matchmakerPayloadTask, Task.Delay(20000)) == matchmakerPayloadTask)
+        {
+            return matchmakerPayloadTask.Result;
+        }
+
+        return null;
     }
 
     private async Task StartBackfill(MatchmakingResults payload)
@@ -69,19 +88,18 @@ public class ServerGameManager : IDisposable
         {
             await backfiller.BeginBackfilling();
         }
-
     }
 
     private void UserJoined(GameData user)
     {
         backfiller.AddPlayerToMatch(user);
         multiplayAllocationService.AddPlayer();
-
-        if(!backfiller.NeedsPlayers() && backfiller.IsBackfilling)
+        if (!backfiller.NeedsPlayers() && backfiller.IsBackfilling)
         {
             _ = backfiller.StopBackfill();
         }
     }
+
     private void UserLeft(GameData user)
     {
         int playerCount = backfiller.RemovePlayerFromMatch(user.userAuthId);
@@ -93,11 +111,10 @@ public class ServerGameManager : IDisposable
             return;
         }
 
-        if(backfiller.NeedsPlayers() && !backfiller.IsBackfilling)
+        if (backfiller.NeedsPlayers() && !backfiller.IsBackfilling)
         {
             _ = backfiller.BeginBackfilling();
         }
-
     }
 
     private async void CloseServer()
@@ -106,26 +123,17 @@ public class ServerGameManager : IDisposable
         Dispose();
         Application.Quit();
     }
-
-    private async Task<MatchmakingResults> GetMatchmakerPayload()
-    {
-        Task<MatchmakingResults> matchmakerPayloadTask = multiplayAllocationService.SubscribeAndAwaitMatchmakerAllocation();
-
-        if(await Task.WhenAny(matchmakerPayloadTask, Task.Delay(20000)) == matchmakerPayloadTask)
-        {
-            return matchmakerPayloadTask.Result;
-        }
-
-        return null;
-    }
+#endif
 
     public void Dispose()
     {
-        networkServer.OnUserJoined -= UserJoined;
-        networkServer.OnUserLeft -= UserLeft;
+#if UNITY_SERVER
+        NetworkServer.OnUserJoined -= UserJoined;
+        NetworkServer.OnUserLeft -= UserLeft;
 
-        backfiller?.Dispose();
         multiplayAllocationService?.Dispose();
-        networkServer?.Dispose();
+        NetworkServer?.Dispose();
+        backfiller?.Dispose();
+#endif
     }
 }

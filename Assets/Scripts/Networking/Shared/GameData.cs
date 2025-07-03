@@ -38,7 +38,7 @@ public class GameInfo
         {
             GameQueue.Solo => "solo-queue",
             GameQueue.Team => "team-queue",
-            _ => "solo-queue",
+            _ => "solo-queue"
         };
     }
 }

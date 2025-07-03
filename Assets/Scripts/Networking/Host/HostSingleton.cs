@@ -16,7 +16,7 @@ public class HostSingleton : MonoBehaviour
 
             if (instance == null)
             {
-                Debug.LogError("ClientSingleton not in Scene!");
+                Debug.LogError("HostSingleton not in Scene!");
                 return null;
             }
 

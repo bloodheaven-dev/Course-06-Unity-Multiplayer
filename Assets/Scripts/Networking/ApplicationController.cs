@@ -8,7 +8,7 @@ public class ApplicationController : MonoBehaviour
     [SerializeField] HostSingleton hostPrefab;
     [SerializeField] ServerSingleton serverPrefab;
 
-    
+    private ApplicationData appData;
 
     async void Start()
     {
@@ -22,6 +22,8 @@ public class ApplicationController : MonoBehaviour
     {
         if (isDedicatedServer)
         {
+            appData = new ApplicationData();
+
             ServerSingleton serverSingleton = Instantiate(serverPrefab);
             await serverSingleton.CreateServer();
 
@@ -39,7 +41,7 @@ public class ApplicationController : MonoBehaviour
 
             if(isAuthenticated)
             {
-                clientSingleton.ChangeScene();
+                clientSingleton.GameManager.GoToMenu();
             }
 
         }

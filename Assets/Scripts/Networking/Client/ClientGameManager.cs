@@ -46,6 +46,11 @@ public class ClientGameManager : IDisposable
         return false;
     }
 
+    public void GoToMenu()
+    {
+        SceneManager.LoadScene(TITLE_SCREEN_STRING);
+    }
+
 
     public void StartClient(string ip, int port)
     {

@@ -3,15 +3,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using NUnit.Framework.Internal;
 using Unity.Services.Matchmaker.Models;
 using Unity.Services.Multiplay;
 using UnityEngine;
 
 public class MultiplayAllocationService : IDisposable
 {
-
-
     private IMultiplayService multiplayService;
     private MultiplayEventCallbacks serverCallbacks;
     private IServerQueryHandler serverCheckManager;

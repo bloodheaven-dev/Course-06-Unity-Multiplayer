@@ -8,8 +8,6 @@ public class ClientSingleton : MonoBehaviour
 
     public ClientGameManager GameManager { get; private set; }
 
-    const string TITLE_SCREEN_STRING = "TitleScreen";
-
     public static ClientSingleton Instance
     {
         get
@@ -39,11 +37,6 @@ public class ClientSingleton : MonoBehaviour
         GameManager = new ClientGameManager();
 
         return await GameManager.InitAsync();
-    }
-
-    public void ChangeScene()
-    {
-        SceneManager.LoadScene(TITLE_SCREEN_STRING);
     }
 
     private void OnDestroy()
