@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class LobbiesList : MonoBehaviour
 {
-    [SerializeField] Transform lobbyItemParent;
+    [Header("References")]
+    [SerializeField] private MainMenu mainMenu;
+    [SerializeField] private Transform lobbyItemParent;
+    [SerializeField] private LobbyItem lobbyItemPrefab;
 
-    [SerializeField] LobbyItem lobbyItemPrefab;
-
-    private bool isJoining;
     private bool isRefreshing;
 
     private void OnEnable()
@@ -67,25 +67,8 @@ public class LobbiesList : MonoBehaviour
         isRefreshing = false;
     }
 
-    public async void JoinAsync(Lobby lobby)
+    public void JoinAsync(Lobby lobby)
     {
-        if (isJoining) return;
-
-        isJoining = true;
-
-        try
-        {
-            Lobby joiningLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id);
-            string joinCode = joiningLobby.Data["JoinCode"].Value;
-
-            await ClientSingleton.Instance.GameManager.StartClientAsync(joinCode);
-
-        }
-        catch(LobbyServiceException e)
-        {
-            Debug.Log(e);
-        }
-
-        isJoining = false;
+        mainMenu.JoinAsync(lobby);
     }
 }
