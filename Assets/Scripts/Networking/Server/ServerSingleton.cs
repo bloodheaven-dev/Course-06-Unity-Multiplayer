@@ -21,7 +21,6 @@ public class ServerSingleton : MonoBehaviour
 
             if (instance == null)
             {
-                Debug.LogError("ServerSingleton not in Scene!");
                 return null;
             }
 
@@ -36,7 +35,7 @@ public class ServerSingleton : MonoBehaviour
     }
 
 
-    public async Task CreateServer()
+    public async Task CreateServer(NetworkObject playerPrefab)
     {
         await UnityServices.InitializeAsync();
 
@@ -45,7 +44,8 @@ public class ServerSingleton : MonoBehaviour
             ApplicationData.IP(),
             ApplicationData.Port(),
             ApplicationData.QPort(),
-            NetworkManager.Singleton
+            NetworkManager.Singleton,
+            playerPrefab
         );
     }
 

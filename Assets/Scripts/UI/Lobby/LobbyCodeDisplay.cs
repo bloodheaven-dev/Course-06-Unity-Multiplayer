@@ -4,23 +4,24 @@ using Unity.Netcode;
 using Unity.Collections;
 public class LobbyCodeDisplay : NetworkBehaviour
 {
-    [SerializeField] private TMP_Text lobbyCode;
+    [SerializeField] private TMP_Text lobbyCodeText;
 
-    private HostGameManager GameManager;
-
-    private NetworkVariable<FixedString32Bytes> LobbyCodeText = new NetworkVariable<FixedString32Bytes>();
+    private NetworkVariable<FixedString32Bytes> lobbyCode = new NetworkVariable<FixedString32Bytes>();
 
     public override void OnNetworkSpawn()
     {
         if (HostSingleton.Instance == null) return;
 
-        GameManager = HostSingleton.Instance?.GameManager;
-
-        if (IsServer)
+        if(IsHost)
         {
-            LobbyCodeText.Value = GameManager.JoinCode;
+            lobbyCode.Value = HostSingleton.Instance.GameManager.JoinCode;
         }
 
-        lobbyCode.text = LobbyCodeText.Value.ToString();
+        lobbyCodeText.text = lobbyCode.Value.ToString();
+
+        if (string.IsNullOrEmpty(lobbyCodeText.text))
+        {
+            lobbyCodeText.transform.parent.gameObject.SetActive(false);
+        }
     }
 }

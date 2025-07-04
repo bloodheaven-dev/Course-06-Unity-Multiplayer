@@ -98,9 +98,11 @@ public class ClientGameManager : IDisposable
         NetworkManager.Singleton.StartClient();
     }
 
-    public async void MatchmakeAsync(Action<MatchmakerPollingResult> onMatchmakeResponse)
+    public async void MatchmakeAsync(bool isTeamQueue, Action<MatchmakerPollingResult> onMatchmakeResponse)
     {
         if (matchplayMatchmaker.IsMatchmaking) return;
+
+        userData.userGamePreferences.gameQueue = isTeamQueue ? GameQueue.Team : GameQueue.Solo;
 
         MatchmakerPollingResult matchResult = await GetMatchAsync();
         onMatchmakeResponse?.Invoke(matchResult);

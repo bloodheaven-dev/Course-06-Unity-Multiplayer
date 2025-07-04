@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ProjectileLauncher : NetworkBehaviour
 {
@@ -24,7 +25,8 @@ public class ProjectileLauncher : NetworkBehaviour
     bool canFire;
     float fireTimer;
     float muzzleFlashTimer;
-   
+
+    bool isCursorOverUI;
     
     
 
@@ -62,6 +64,8 @@ public class ProjectileLauncher : NetworkBehaviour
 
         fireTimer += Time.deltaTime;
 
+        isCursorOverUI = EventSystem.current.IsPointerOverGameObject();
+
         if (!canFire) return;
         if (!IsOwner) return;
         if (wallet.TotalCoins.Value < costToFire) return;
@@ -75,6 +79,11 @@ public class ProjectileLauncher : NetworkBehaviour
 
     void HandleFire(bool canFire)
     {
+        if (canFire)
+        {
+            if (isCursorOverUI) return;
+        }
+
         this.canFire = canFire;
     }
 

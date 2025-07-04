@@ -14,20 +14,30 @@ using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class HostGameManager : IDisposable
 {
+    [Header("References")]
+    [SerializeField] private MainMenu mainMenu;
+
     public string JoinCode { get; private set; }
     private string lobbyID;
 
     private Allocation allocation;
+    private NetworkObject playerPrefab;
     public NetworkServer NetworkServer { get; private set; }
 
     private const int MaxConnections = 8;
     private const float HeartbeatTime = 15;
     private const string GAME_SCENE_STRING = "MainLevel";
 
-    public async Task StartHostAsync()
+    public HostGameManager(NetworkObject playerPrefab)
+    {
+        this.playerPrefab = playerPrefab;
+    }
+
+    public async Task StartHostAsync(bool isPrivate)
     {
         try
         {
@@ -82,7 +92,9 @@ public class HostGameManager : IDisposable
         try
         {
             CreateLobbyOptions lobbyOptions = new CreateLobbyOptions();
-            lobbyOptions.IsPrivate = false;
+
+            lobbyOptions.IsPrivate = isPrivate;
+
             lobbyOptions.Data = new Dictionary<string, DataObject>
             {
                 {
@@ -106,7 +118,7 @@ public class HostGameManager : IDisposable
             return;
         }
 
-        NetworkServer = new NetworkServer(NetworkManager.Singleton);
+        NetworkServer = new NetworkServer(NetworkManager.Singleton, playerPrefab);
 
         GameData userData = new GameData
         {

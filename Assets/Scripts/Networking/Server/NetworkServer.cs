@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
@@ -8,6 +9,7 @@ using UnityEngine;
 public class NetworkServer : IDisposable
 {
     private NetworkManager networkManager;
+    private NetworkObject playerPrefab;
 
     private Dictionary<ulong, string> clientIdToAuth = new Dictionary<ulong, string>();
     private Dictionary<string, GameData> authIdToUserData = new Dictionary<string, GameData>();
@@ -17,9 +19,10 @@ public class NetworkServer : IDisposable
 
     public Action<string> OnPlayerLeft;
 
-    public NetworkServer(NetworkManager networkManager)
+    public NetworkServer(NetworkManager networkManager, NetworkObject playerPrefab)
     {
         this.networkManager = networkManager;
+        this.playerPrefab = playerPrefab;
 
         networkManager.ConnectionApprovalCallback += ApprovalCheck;
         networkManager.OnServerStarted += OnNetworkReady;
@@ -45,10 +48,19 @@ public class NetworkServer : IDisposable
 
         OnUserJoined?.Invoke(userData);
 
+        _ = SpawnPlayerDelayed(request.ClientNetworkId);
+
         response.Approved = true;
-        response.Position = SpawnPoint.GetRandomSpawnPointPos();
-        response.Rotation = Quaternion.identity;
-        response.CreatePlayerObject = true;
+        response.CreatePlayerObject = false;
+    }
+
+    private async Task SpawnPlayerDelayed(ulong clientId)
+    {
+        await Task.Delay(250);
+
+        NetworkObject playerInstance = GameObject.Instantiate(playerPrefab, SpawnPoint.GetRandomSpawnPointPos(), Quaternion.identity);
+        playerInstance.SpawnAsPlayerObject(clientId);
+
     }
 
     public GameData GetUserDataByClientID(ulong clientNetworkId)

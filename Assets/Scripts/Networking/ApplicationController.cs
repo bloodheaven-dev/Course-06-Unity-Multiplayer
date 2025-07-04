@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Threading.Tasks;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,8 +9,11 @@ public class ApplicationController : MonoBehaviour
     [SerializeField] ClientSingleton clientPrefab;
     [SerializeField] HostSingleton hostPrefab;
     [SerializeField] ServerSingleton serverPrefab;
+    [SerializeField] NetworkObject playerPrefab;
 
     private ApplicationData appData;
+
+    private const string GAME_SCENE_STRING = "MainLevel";
 
     async void Start()
     {
@@ -22,17 +27,19 @@ public class ApplicationController : MonoBehaviour
     {
         if (isDedicatedServer)
         {
+            Application.targetFrameRate = 60;
+
             appData = new ApplicationData();
 
             ServerSingleton serverSingleton = Instantiate(serverPrefab);
-            await serverSingleton.CreateServer();
 
-            await serverSingleton.GameManager.StartGameServerAsync();
+            StartCoroutine(LoadSceneAsync(serverSingleton));
+
         }
         else
         {
             HostSingleton hostSingleton = Instantiate(hostPrefab);
-            hostSingleton.CreateHost();
+            hostSingleton.CreateHost(playerPrefab);
 
             ClientSingleton clientSingleton = Instantiate(clientPrefab);
             bool isAuthenticated = await clientSingleton.CreateClient();
@@ -47,6 +54,23 @@ public class ApplicationController : MonoBehaviour
         }
 
 
+    }
+
+    private IEnumerator LoadSceneAsync(ServerSingleton serverSingleton)
+    {
+
+
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(GAME_SCENE_STRING);
+        while(!asyncOperation.isDone)
+        {
+            yield return null;
+        }
+
+        Task createServer = serverSingleton.CreateServer(playerPrefab);
+        yield return new WaitUntil(() => createServer.IsCompleted);
+
+        Task startServer = serverSingleton.GameManager.StartGameServerAsync();
+        yield return new WaitUntil(() => startServer.IsCompleted);
     }
 
 }

@@ -18,14 +18,14 @@ public class ServerGameManager : IDisposable
     private Dictionary<string, int> teamIdToTeamIndex = new Dictionary<string, int>();
     public NetworkServer NetworkServer { get; private set; }
 
-    private const string GAME_SCENE_STRING = "MainLevel";
+    
 
-    public ServerGameManager(string serverIP, int serverPort, int queryPort, NetworkManager manager)
+    public ServerGameManager(string serverIP, int serverPort, int queryPort, NetworkManager manager, NetworkObject playerPrefab)
     {
         this.serverIP = serverIP;
         this.serverPort = serverPort;
         this.queryPort = queryPort;
-        NetworkServer = new NetworkServer(manager);
+        NetworkServer = new NetworkServer(manager, playerPrefab);
         #if UNITY_SERVER
         multiplayAllocationService = new MultiplayAllocationService();
         #endif
@@ -63,7 +63,6 @@ public class ServerGameManager : IDisposable
             return;
         }
 
-        NetworkManager.Singleton.SceneManager.LoadScene(GAME_SCENE_STRING, LoadSceneMode.Single);
 #endif
     }
 
@@ -92,7 +91,8 @@ public class ServerGameManager : IDisposable
 
     private void UserJoined(GameData user)
     {
-        backfiller.AddPlayerToMatch(user);
+        Team team = backfiller.GetTeamByUserId(user.userAuthId);
+        Debug.Log($"{team.TeamId} : {user.userAuthId}");
         multiplayAllocationService.AddPlayer();
         if (!backfiller.NeedsPlayers() && backfiller.IsBackfilling)
         {
