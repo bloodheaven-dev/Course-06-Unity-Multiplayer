@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 public class ProjectileLauncher : NetworkBehaviour
 {
     [Header("References")]
+    [SerializeField] PlayerTank player;
     [SerializeField] InputReader inputReader;
     [SerializeField] CoinWallet wallet;
     [SerializeField] GameObject serverProjectilePrefab;
@@ -74,7 +75,7 @@ public class ProjectileLauncher : NetworkBehaviour
 
         FireServerRpc(projectileSpawnPoint.position, projectileSpawnPoint.up);
 
-        SpawnDummyProjectile(clientProjectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.up);
+        SpawnDummyProjectile(clientProjectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.up, player.TeamIndex.Value);
     }
 
     void HandleFire(bool canFire)
@@ -99,7 +100,7 @@ public class ProjectileLauncher : NetworkBehaviour
         return false;
     }
 
-    void SpawnDummyProjectile(GameObject prefab, Vector3 spawnPosition, Vector3 direction)
+    void SpawnDummyProjectile(GameObject prefab, Vector3 spawnPosition, Vector3 direction, int teamIndex)
     {
         muzzleFlash.SetActive(true);
         muzzleFlashTimer = muzzleFlashDuration;
@@ -110,9 +111,9 @@ public class ProjectileLauncher : NetworkBehaviour
         Collider2D projectileCollider = spawnedProjectile.GetComponent<Collider2D>();
         Physics2D.IgnoreCollision(tankCollider, projectileCollider);
 
-        if (spawnedProjectile.TryGetComponent<DealDamageOnContact>(out DealDamageOnContact dealDamage))
+        if (spawnedProjectile.TryGetComponent<Projectile>(out Projectile projectile))
         {
-            dealDamage.SetOwner(OwnerClientId);
+            projectile.Init(player.TeamIndex.Value);
         }
 
         Rigidbody2D rb = spawnedProjectile.GetComponent<Rigidbody2D>();
@@ -129,7 +130,7 @@ public class ProjectileLauncher : NetworkBehaviour
         wallet.SpendCoins(costToFire);
 
         GameObject prefab = serverProjectilePrefab;
-        SpawnDummyProjectile(prefab, spawnPosition, direction);
+        SpawnDummyProjectile(prefab, spawnPosition, direction, player.TeamIndex.Value);
 
         FireClientRpc(spawnPosition, direction);
     }
@@ -140,6 +141,6 @@ public class ProjectileLauncher : NetworkBehaviour
         if (IsOwner) return;
 
         GameObject prefab = clientProjectilePrefab;
-        SpawnDummyProjectile(prefab, spawnPosition, direction);
+        SpawnDummyProjectile(prefab, spawnPosition, direction, player.TeamIndex.Value);
     }
 }

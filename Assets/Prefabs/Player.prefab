@@ -5670,6 +5670,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  player: {fileID: 5016154992718917740}
   inputReader: {fileID: 11400000, guid: 1635c2bee8362b84983c353b16b2fe60, type: 2}
   wallet: {fileID: -2388654680310045519}
   serverProjectilePrefab: {fileID: 653384052327649298, guid: 0b16a188b4d28104f8b832186349b2d1, type: 3}
@@ -5749,10 +5750,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 5016154992718917740}
+  teamColorLookup: {fileID: 11400000, guid: 37538aa932361db4a95d74f5e2404a69, type: 2}
   playerSprites:
   - {fileID: 3807252531379026158}
   - {fileID: 1054821038100391668}
-  teamColorLookup: {fileID: 11400000, guid: 37538aa932361db4a95d74f5e2404a69, type: 2}
 --- !u!1 &6011984825350142621
 GameObject:
   m_ObjectHideFlags: 0
