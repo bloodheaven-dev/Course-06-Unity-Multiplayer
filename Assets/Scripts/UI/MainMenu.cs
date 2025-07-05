@@ -20,10 +20,20 @@ public class MainMenu : MonoBehaviour
 
     private bool isInQueue;
     private bool isCancelling;
-    private bool isBusy;
     private float timeInQueue;
 
     private TMP_Text findGameText;
+
+    private bool _isBusy;
+    private bool isBusy
+    {
+        get => _isBusy;
+        set
+        {
+            _isBusy = value;
+            ToggleInteractable(value);
+        }
+    }
 
     void Start()
     {
@@ -36,6 +46,7 @@ public class MainMenu : MonoBehaviour
         joinButton.onClick.AddListener(StartClientButton);
 
         findGameText = findGameButton.GetComponentInChildren<TMP_Text>();
+
     }
 
     private void Update()
@@ -46,6 +57,12 @@ public class MainMenu : MonoBehaviour
             TimeSpan ts = TimeSpan.FromSeconds(timeInQueue);
             queueTime.text = string.Format("{0:00}:{1:00}", ts.Minutes, ts.Seconds);
         }
+    }
+
+    private void ToggleInteractable(bool value)
+    {
+        teamToggle.interactable = !value;
+        privateToggle.interactable = !value;
     }
 
     private async void FindGameButton()
