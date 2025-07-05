@@ -149,5 +149,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ffacd6b2a40eef4fbc6f93fd61b35b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leaderboardItemText: {fileID: 1419847346270243875}
-  localColor: {r: 0.9811321, g: 0.9365026, b: 0.5322179, a: 1}
+  displayText: {fileID: 1419847346270243875}
