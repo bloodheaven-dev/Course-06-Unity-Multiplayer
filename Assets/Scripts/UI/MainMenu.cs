@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
@@ -53,21 +54,7 @@ public class MainMenu : MonoBehaviour
 
         if (isInQueue)
         {
-            queueStatus.text = "Cancelling...";
-
-            isCancelling = true;
-
-            await ClientSingleton.Instance.GameManager.CancelMatchmaking();
-
-            isCancelling = false;
-            isInQueue = false;
-            isBusy = false;
-
-            findGameText.text = "Find Game";
-            queueStatus.text = string.Empty;
-            queueTime.text = string.Empty;
-
-            
+            await AbortGame();
 
             return;
         }
@@ -84,6 +71,23 @@ public class MainMenu : MonoBehaviour
         isBusy = true;
     }
 
+    private async Task AbortGame()
+    {
+        queueStatus.text = "Cancelling...";
+
+        isCancelling = true;
+
+        await ClientSingleton.Instance.GameManager.CancelMatchmaking();
+
+        isCancelling = false;
+        isInQueue = false;
+        isBusy = false;
+
+        findGameText.text = "Find Game";
+        queueStatus.text = string.Empty;
+        queueTime.text = string.Empty;
+    }
+
     private void OnMatchMade(MatchmakerPollingResult pollingResult)
     {
         switch(pollingResult)
@@ -95,24 +99,30 @@ public class MainMenu : MonoBehaviour
 
             case MatchmakerPollingResult.TicketCreationError:
 
-                queueStatus.text = "TicketCreationError";
+                PollingResultWarning(pollingResult);
                 break;
 
             case MatchmakerPollingResult.TicketCancellationError:
 
-                queueStatus.text = "TicketCancellationError";
+                PollingResultWarning(pollingResult);
                 break;
 
             case MatchmakerPollingResult.TicketRetrievalError:
 
-                queueStatus.text = "TicketRetrievalError";
+                PollingResultWarning(pollingResult);
                 break;
 
             case MatchmakerPollingResult.MatchAssignmentError:
 
-                queueStatus.text = "MatchAssignmentError";
+                PollingResultWarning(pollingResult);
                 break;
         }
+    }
+
+    private void PollingResultWarning(MatchmakerPollingResult pollingResult)
+    {
+        _ = AbortGame();
+        Debug.LogWarning("Following Error occured during Find Game: " + pollingResult);
     }
 
     async void StartHostButton()
